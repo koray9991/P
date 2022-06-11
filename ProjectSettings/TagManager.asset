@@ -3,7 +3,19 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - MoveRight
+  - MoveLeft
+  - RotatingPlatform
+  - ForceRight
+  - ForceLeft
+  - PWSC
+  - Paintable
+  - Ground
+  - HalfDonut
+  - StaticObstacle
+  - HorizontalObstacle
+  - DonutCollider
   layers:
   - Default
   - TransparentFX
