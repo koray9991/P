@@ -7,6 +7,7 @@ public class LeftForward : MonoBehaviour
     public bool HorizontalObstacleDetect;
     public bool StaticObstacleDetect;
     public bool DonutObstacleDetect;
+    public bool RotatorObstacleDetect;
     void Start()
     {
 
@@ -31,6 +32,10 @@ public class LeftForward : MonoBehaviour
         {
             DonutObstacleDetect = true;
         }
+        if (other.tag == "Rotator")
+        {
+            RotatorObstacleDetect = true;
+        }
     }
     private void OnTriggerExit(Collider other)
     {
@@ -45,6 +50,10 @@ public class LeftForward : MonoBehaviour
         if (other.tag == "DonutCollider")
         {
             DonutObstacleDetect = false;
+        }
+        if (other.tag == "Rotator")
+        {
+            RotatorObstacleDetect = false;
         }
     }
 }

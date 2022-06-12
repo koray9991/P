@@ -5,34 +5,37 @@ using UnityEngine;
 public class OpponentCharacter : MonoBehaviour
 {
     public Animator anim;
-    float StartToRun;
+   public float StartToRun;
     float TimerStartToRun;
     public Rigidbody rb;
     float xMovement;
     float zMovement;
-    public GameObject leftForward,rightForward,MiddleForward;
+    public GameObject leftForward,rightForward,MiddleForward,Detectors;
     public bool HorizontalObstacleStop;
     public bool StaticObstacleStop;
     public bool DonutObstacleStop;
+    public bool RotatorObstacleStop;
+   public bool hitRotatingStick;
+    public bool Finish;
     void Start()
     {
-        StartToRun = Random.Range(1, 3);
+        StartToRun = Random.Range(1f, 3f);
     }
 
     // Update is called once per frame
     void Update()
     {
         TimerStartToRun += Time.deltaTime;
-        if (zMovement == 1)
+        if (zMovement == 1 && !Finish)
         {
             anim.SetInteger("Movement", 1);
         }
-        else
+       if( zMovement==0 && !Finish)
         {
             anim.SetInteger("Movement", 0);
         }
-
-        if (TimerStartToRun > StartToRun && !HorizontalObstacleStop)
+        
+        if (TimerStartToRun > StartToRun && !HorizontalObstacleStop && !DonutObstacleStop && !hitRotatingStick && !Finish)
         {
             zMovement = 1;
 
@@ -79,9 +82,16 @@ public class OpponentCharacter : MonoBehaviour
             StartCoroutine(StaticObstacleMovement());
 
         }
+
+
+
+
+
         if (leftForward.GetComponent<LeftForward>().DonutObstacleDetect && !rightForward.GetComponent<RightForward>().DonutObstacleDetect)
         {
-            xMovement = 0.5f;
+            StartCoroutine(DonutStopZPlus());
+            DonutObstacleStop = true;
+            
             if (!MiddleForward.GetComponent<MiddleForward>().DonutObstacleDetect)
             {
                 xMovement = 0;
@@ -90,13 +100,58 @@ public class OpponentCharacter : MonoBehaviour
         }
         if (!leftForward.GetComponent<LeftForward>().DonutObstacleDetect && rightForward.GetComponent<RightForward>().DonutObstacleDetect)
         {
-            xMovement = -0.5f;
+            StartCoroutine(DonutStopZMinus());
+            DonutObstacleStop = true;
+           
             if (!MiddleForward.GetComponent<MiddleForward>().DonutObstacleDetect)
             {
                 xMovement = 0;
             }
 
         }
+
+
+
+
+
+
+
+
+
+        if (leftForward.GetComponent<LeftForward>().RotatorObstacleDetect && !rightForward.GetComponent<RightForward>().RotatorObstacleDetect)
+        {
+            xMovement = 0.7f;
+            if (!MiddleForward.GetComponent<MiddleForward>().RotatorObstacleDetect)
+            {
+                xMovement = 0;
+            }
+            StartCoroutine(StaticObstacleMovement());
+        }
+        if (!leftForward.GetComponent<LeftForward>().RotatorObstacleDetect && rightForward.GetComponent<RightForward>().RotatorObstacleDetect)
+        {
+            xMovement = -0.7f;
+            if (!MiddleForward.GetComponent<MiddleForward>().RotatorObstacleDetect)
+            {
+                xMovement = 0;
+            }
+            StartCoroutine(StaticObstacleMovement());
+
+        }
+        if (leftForward.GetComponent<LeftForward>().RotatorObstacleDetect && rightForward.GetComponent<RightForward>().RotatorObstacleDetect)
+        {
+            if (transform.position.x < 0)
+            {
+                xMovement = 1f;
+            }
+            if (transform.position.x > 0)
+            {
+                xMovement = -1f;
+            }
+
+            StartCoroutine(StaticObstacleMovement());
+
+        }
+
     }
 
     private IEnumerator StaticObstacleMovement()
@@ -105,20 +160,51 @@ public class OpponentCharacter : MonoBehaviour
         yield return new WaitForSeconds(0.7f);
         xMovement = 0;
     }
+   
+    private IEnumerator DonutStopZPlus()
+    {
+        zMovement = 0;
+        yield return new WaitForSeconds(0.3f);
+        DonutObstacleStop = false;
+        xMovement = 0.7f;
+        zMovement = 1;
+        StartCoroutine(DonutXZero());
+    }
+    private IEnumerator DonutStopZMinus()
+    {
+        zMovement = 0;
+        yield return new WaitForSeconds(0.3f);
+        DonutObstacleStop = false;
+        xMovement = -0.7f;
+        zMovement = 1;
+        StartCoroutine(DonutXZero());
+    }
+    private IEnumerator DonutXZero()
+    {
+
+        yield return new WaitForSeconds(0.4f);
+        xMovement = 0;
+    }
     private IEnumerator HorizontalStop()
     {
         zMovement = 0;
         yield return new WaitForSeconds(0.4f);
         HorizontalObstacleStop = false;
+       
         zMovement = 1;
     }
     private void FixedUpdate()
     {
-      
-        rb.velocity = new Vector3(xMovement, rb.velocity.y, zMovement);
+        if (!hitRotatingStick) 
+            {
+            rb.velocity = new Vector3(xMovement, rb.velocity.y, zMovement);
+        } 
+       
     }
     private void OnTriggerEnter(Collider other)
     {
+      
+
         if (other.tag == "Respawn" || other.tag == "HorizontalObstacle" || other.tag == "StaticObstacle" || other.tag == "HalfDonut")
         {
             transform.position = new Vector3(Random.Range(-0.4f, 0.4f), 0, Random.Range(-0.3f, 0f));
@@ -139,12 +225,38 @@ public class OpponentCharacter : MonoBehaviour
             leftForward.GetComponent<LeftForward>().DonutObstacleDetect = false;
             rightForward.GetComponent<RightForward>().DonutObstacleDetect = false;
             MiddleForward.GetComponent<MiddleForward>().DonutObstacleDetect = false;
+
+            leftForward.GetComponent<LeftForward>().RotatorObstacleDetect = false;
+            rightForward.GetComponent<RightForward>().RotatorObstacleDetect = false;
+            MiddleForward.GetComponent<MiddleForward>().RotatorObstacleDetect = false;
+
             xMovement = 0;
 
         }
     }
+    private IEnumerator rotatingStickZMovement()
+    {
+        yield return new WaitForSeconds(0.7f);
+        hitRotatingStick = false;
+    }
     private void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.tag == "FinishBot")
+        {
+            collision.gameObject.transform.position = new Vector3(collision.gameObject.transform.position.x, collision.gameObject.transform.position.y, collision.gameObject.transform.position.z - 0.01f);
+            Finish = true;
+            Detectors.SetActive(false);
+            rb.isKinematic = true;
+            GetComponent<CapsuleCollider>().enabled = false;
+            anim.SetInteger("Movement", 2);
+
+        }
+        if (collision.gameObject.tag == "RotatingStick")
+        {
+            hitRotatingStick = true;
+            StartCoroutine(rotatingStickZMovement());
+            rb.AddForce(Random.Range(-50, 50), 120, -120);
+        }
         if (collision.gameObject.tag == "RotatingPlatform")
         {
 
@@ -170,6 +282,10 @@ public class OpponentCharacter : MonoBehaviour
             leftForward.GetComponent<LeftForward>().DonutObstacleDetect = false;
             rightForward.GetComponent<RightForward>().DonutObstacleDetect = false;
             MiddleForward.GetComponent<MiddleForward>().DonutObstacleDetect = false;
+
+            leftForward.GetComponent<LeftForward>().RotatorObstacleDetect = false;
+            rightForward.GetComponent<RightForward>().RotatorObstacleDetect = false;
+            MiddleForward.GetComponent<MiddleForward>().RotatorObstacleDetect = false;
 
             xMovement = 0;
 

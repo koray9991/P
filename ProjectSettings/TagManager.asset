@@ -16,6 +16,9 @@ TagManager:
   - StaticObstacle
   - HorizontalObstacle
   - DonutCollider
+  - Rotator
+  - FinishBot
+  - RotatingStick
   layers:
   - Default
   - TransparentFX
