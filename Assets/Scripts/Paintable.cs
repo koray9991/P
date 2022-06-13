@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using PaintIn3D;
 public class Paintable : MonoBehaviour
 {
-    public GameObject Brush;
-    public float brushSize= 0.005f;
-
+   // public GameObject Brush;
+   // public float brushSize= 0.005f;
+   
+ 
     void Start()
     {
         
@@ -15,7 +16,10 @@ public class Paintable : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0))
+
+    
+
+     /*   if (Input.GetMouseButton(0))
         {
             var Ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -34,6 +38,6 @@ public class Paintable : MonoBehaviour
                 
                
             }
-        }
+        }*/
     }
 }

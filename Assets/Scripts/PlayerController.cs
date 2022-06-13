@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float zhiz;
@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
    // Quaternion targetAngle30 = Quaternion.Euler(0, 30, 0);
    // Quaternion targetAngleminus30 = Quaternion.Euler(0, -30, 0);
     public Animator anim;
+    public GameObject PaintCanvas;
     bool respawn;
     private void Start()
     {
@@ -97,6 +98,7 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.tag == "FinishBot")
         {
+            PaintCanvas.SetActive(true);
             finish = true;
             collision.gameObject.transform.position = new Vector3(collision.gameObject.transform.position.x, collision.gameObject.transform.position.y, collision.gameObject.transform.position.z - 0.01f);
             //  other.gameObject.SetActive(false);
@@ -130,6 +132,13 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.tag == "RotatingPlatform")
         {
             transform.parent =null;
+        }
+    }
+    public void Button( int ButtonNo)
+    {
+        if (ButtonNo == 1)
+        {
+            Application.LoadLevel(Application.loadedLevel);
         }
     }
     /*  void changeCurrentAngle()
