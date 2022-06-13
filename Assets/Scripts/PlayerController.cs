@@ -24,13 +24,13 @@ public class PlayerController : MonoBehaviour
     }
     private void Update()
     {
-        getinput();
+      
         // changeCurrentAngle();
         transform.rotation = Quaternion.Euler(0, 0, 0);
     }
     private void FixedUpdate()
     {
-       
+        getinput();
 
         if (respawn)
         {
